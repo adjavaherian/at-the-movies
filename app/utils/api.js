@@ -3,16 +3,13 @@ var _ = require('lodash');
 var auth = require('../../config').auth;
 
 var api = {
-    getMovies: function (flux) {
-        var endpoint = 'https://interview.zocdoc.com/api/1/FEE/AllMovies' + auth;
-
-        return requester('GET', endpoint, flux, null, null, null, {
-            contentType: 'text/json',
-            accept: 'text/json'
-        });
+    getMovies: function () {
+        var endpoint = 'https://interview.zocdoc.com/api/1/FEE/AllMovies';
+        return requester('GET', endpoint, {authToken: auth});
     },
-    getMoviesByRank: function(){
-        //
+    getMoviesByRank: function(startRank, numMovies){
+        var endpoint = 'https://interview.zocdoc.com/api/1/FEE/MoviesByRank';
+        return requester('GET', endpoint, {authToken: auth, startRank: startRank, numMovies: numMovies});
     },
     getMovieDetails: function(){
         //

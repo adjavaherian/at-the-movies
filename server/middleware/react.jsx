@@ -7,7 +7,7 @@ import AppRoutes from 'app/routes';
 
 var url = require('url');
 var _ = require('lodash');
-
+var Promise = require('promise');
 function header(){
     return `
         <!doctype html>
@@ -19,15 +19,10 @@ function header(){
             />
             <meta charSet="UTF-8" />
             <meta content="IE=Edge" httpEquiv="X-UA-Compatible"/>
-
             <meta content="yes" name="apple-mobile-web-app-capable"/>
             <meta content="yes" name="mobile-web-app-capable"/>
-            <meta content="E65CEFDE3236BB9C2E2D2BD27D4809BF" name="msvalidate.01"/>
-            <link href="https://plus.google.com/u/1/b/111034699960542004994" rel="publisher"/>
-            <script src='https://use.typekit.net/uox3mzi.js'></script>
-            <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+            <script src="/commons.bundle.js"></script>
             <style></style>
-
             </head>
   `;
 
@@ -43,24 +38,56 @@ var reactMiddleWare = function(req, res, next) {
     } else if (redirectLocation) {
         res.redirect(302, redirectLocation.pathname + redirectLocation.search);
     } else if (renderProps) {
-        let abort = false;
+
         let stateStub = _.extend({
             params: renderProps.params,
             path: renderProps.location.pathname,
             pathname: renderProps.location.pathname
         }, renderProps.location);
 
-        function createFluxComponent(Component, props) {
-            props = _.extend(props, stateStub);
-            return <Component {...props} />;
-        }
 
-        var markup = renderToString(
-            <RouterContext {...renderProps} createElement={createFluxComponent} />
-        );
+        // collect promises
+        var promises = [];
 
-        res.write(header() + '<body>' + markup + '</body></html>');
-        res.end();
+        renderProps.components.forEach(function(route) {
+            console.log('route serverMount', typeof route.serverMount);
+            if (route.serverMount) {
+                promises.push(route.serverMount());
+            }
+        });
+
+
+        Promise.all(promises)
+            .catch(function(err) {
+                console.warn('Error from SSR promise', err);
+                if (res.headersSent) {
+                    return true;
+                }
+
+                res.end(500);
+            })
+            .done(function onFulfilled(result) {
+
+                console.debug('got result', typeof result);
+
+                function createFluxComponent(Component, props) {
+                    props = _.extend(props, stateStub, {result: result});
+                    return <Component {...props} />;
+                }
+
+                if (res.headersSent) {
+                    return true;
+                }
+
+                var markup = renderToString(
+                    <RouterContext {...renderProps} createElement={createFluxComponent} />
+                );
+
+                res.write(header() + '<body><div id="app"><div>' + markup + '</div></div><script src="/app.bundle.js"></script></body></html>');
+                res.end();
+
+            });
+
 
 
     } else {

@@ -13,7 +13,16 @@ server.set('env', config.server.env);
 server.set('view engine', 'jade');
 server.set('views', views);
 
-server.use(express.static('../public', config.server.static));
+console.log(process.cwd() + '/server/public');
+server.use(express.static(process.cwd() + '/public', {
+    dotfiles: 'ignore',
+    etag: true,
+    extensions: false,
+    index: false,
+    lastModified: true,
+    maxAge: 31557600000,
+    redirect: false
+}));
 server.use(expressWinston.logger(logger.defaultConfig));
 server.use(routes);
 server.use(expressWinston.errorLogger(logger.errorConfig));

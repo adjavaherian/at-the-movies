@@ -6,7 +6,8 @@ var AppTemplate = React.createClass({
         children: React.PropTypes.object,
         location: React.PropTypes.object,
         params: React.PropTypes.object,
-        serializedFlux: React.PropTypes.string
+        serializedFlux: React.PropTypes.string,
+        result: React.PropTypes.array
     },
     mixins: [
     ],
@@ -23,10 +24,7 @@ var AppTemplate = React.createClass({
     },
     componentDidMount: function() {
         var self = this;
-    },
-    componentWillUnmount: function() {
-        var self = this;
-
+        console.log('this result', this.props.result);
     },
     render: function() {
 
@@ -38,7 +36,8 @@ var AppTemplate = React.createClass({
                     path: this.props.location.pathname,
                     pathname: this.props.location.pathname,
                     query: this.props.location.query,
-                    location: this.props.location
+                    location: this.props.location,
+                    result: this.props.result
                 })}
 
             </div>

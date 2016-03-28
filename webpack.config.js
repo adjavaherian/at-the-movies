@@ -44,13 +44,12 @@ var client = {
     name: 'client side webpack',
     target: 'web',
     entry: {
-        app: path.join(__dirname, 'app/routes.jsx')
+        app: path.join(__dirname, 'app/app.jsx')
     },
     output: {
         path: path.join(__dirname, 'public'),
         publicPath: 'public/',
-        filename: '[name].bundle.[hash].js',
-        chunkFilename: '[name].chunk.[chunkhash].js'
+        filename: '[name].bundle.js'
     },
     module: {
         loaders: [
@@ -63,7 +62,7 @@ var client = {
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({
             name: 'commons',
-            filename: 'commons.bundle.[hash].js',
+            filename: 'commons.bundle.js',
             //minChunks: 2,
             chunks: ['rehydrate', 'app']
         }),

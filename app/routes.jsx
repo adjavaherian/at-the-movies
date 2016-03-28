@@ -5,7 +5,7 @@ import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 
 //templates
-var AppTemplate = require('./index');
+var AppTemplate = require('./template');
 
 //pages
 var FrontPage = require('app/pages/front-page');

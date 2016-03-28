@@ -17,15 +17,6 @@ module.exports = {
         apiPort: process.env.PORT || 3000,
         logging: {
             logLevel: 'debug'
-        },
-        static: {
-            dotfiles: 'ignore',
-            etag: true,
-            extensions: false,
-            index: false,
-            lastModified: true,
-            maxAge: 31557600000,
-            redirect: false
         }
     }
 };
