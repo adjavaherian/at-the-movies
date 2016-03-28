@@ -3,7 +3,7 @@
 var winston = require('winston');
 var deepMerge = require('deep-merge');
 var isIntProd = (process.env.NODE_ENV  === 'production' || process.env.NODE_ENV  === 'integration');
-var logLevel = require('./config').server.logging.logLevel;
+var logLevel = require('../config').server.logging.logLevel;
 
 //setup a time stamp for the logger
 var timeStamp = function timeStamp() {

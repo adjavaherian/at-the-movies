@@ -17,9 +17,6 @@ var productionPlugins = [
         }
     })
 ];
-var productionLoaders = [
-    { test: /\.js$/, loader: WebpackStrip.loader('debug', 'console.log') }
-];
 
 var deepmerge = DeepMerge(function(target, source, key) {
     if (target instanceof Array) {
@@ -42,33 +39,16 @@ function node_externals(context, request, cb) {
     cb();
 }
 
-//require common.js for configs, manifests that might change
-var dist_dir  = fs.readdirSync(path.join(__dirname, 'public', 'dist')).filter(function(x) {
-    if (x.indexOf('.json') > -1) {
-        return x
-    }
-});
-
-var config_modules  = ['states-json.json'].concat(dist_dir);
-
-function config_externals(context, request, cb) {
-    var clean_request = request.split('/').splice(-1)[0];
-    if (config_modules.indexOf(clean_request) !== -1) {
-        cb(null, 'commonjs ' + request);
-        return;
-    }
-    cb();
-}
 
 var client = {
     name: 'client side webpack',
     target: 'web',
     entry: {
-        app: path.join(__dirname, 'app/index.jsx')
+        app: path.join(__dirname, 'app/routes.jsx')
     },
     output: {
         path: path.join(__dirname, 'public'),
-        publicPath: nodeCDN,
+        publicPath: 'public/',
         filename: '[name].bundle.[hash].js',
         chunkFilename: '[name].chunk.[chunkhash].js'
     },
@@ -77,10 +57,6 @@ var client = {
             {
                 test: /\.scss$/,
                 loader: ExtractTextPlugin.extract('style-loader', 'css!postcss!sass')
-            }, {
-                test: /\.(jpe?g|png|gif|svg)$/i,
-                loader: 'gulp-rev-loader',
-                query: manifestParams
             }
         ]
     },
@@ -113,7 +89,7 @@ var server = {
     target: 'node',
     devtool: 'source-map',
     entry: {
-        index: path.join(__dirname, 'index.js')
+        index: path.join(__dirname, 'server', 'index.js')
     },
     output: {
         libraryTarget: 'commonjs2',
@@ -141,7 +117,7 @@ var server = {
             entryOnly: false
         })
     ],
-    externals: [{ 'react': true }, node_externals, config_externals]
+    externals: [{ 'react': true }, node_externals]
 };
 
 var defaults = {
@@ -172,8 +148,6 @@ var defaults = {
         }
     },
     plugins: [
-        new ProgressPlugin({console:  consoleAvailable}),
-        new CachePlugin(myCache),
         new webpack.optimize.DedupePlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(true),
         new webpack.DefinePlugin({
@@ -182,14 +156,7 @@ var defaults = {
             __KARMA__: false
         })
     ],
-    resolveLoader: {
-        root: __dirname,
-        fallback: __dirname + '/node_modules',
-        alias: {
-            'noop-loader': path.join(__dirname,  'webpack-utils', 'noop-loader'),
-            'passthru-loader': path.join(__dirname, 'webpack-utils', 'passthru-loader')
-        }
-    },
+
     module: {
         // Disable handling of unknown requires and requires with a single expression
         unknownContextRegExp: /$^/,
@@ -202,10 +169,6 @@ var defaults = {
                 loaders: ['json-loader']
             }
             , {
-                include: [
-                    path.resolve(__dirname, 'app'),
-                    path.resolve(__dirname, 'server')
-                ],
                 test: /\.jsx?$/,
                 loader: 'babel-loader',
                 exclude: /node_modules/,
@@ -221,12 +184,6 @@ var defaults = {
     debug: true
 };
 
-// file and make sure webpack does not try to parse it
-deps.forEach(function(dep) {
-    var depPath = path.resolve(node_modules_dir, dep);
-    defaults.resolve.alias[dep.split(path.sep)[0]] = depPath;
-    defaults.module.noParse.push(depPath);
-});
 
 module.exports = (process.argv.indexOf('--json') >= 0 || process.argv.indexOf('--profile') >= 0) ?
     config(client) : [config(client), config(server)];

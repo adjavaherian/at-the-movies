@@ -1,5 +1,10 @@
 module.exports = {
 
+    auth: '3b502b3f-b1ff-4128-bd99-626e74836d9c',
+    dirs: {
+        dist: 'public',
+        server: 'server/dist'
+    },
     server: {
         root: '/hotpads-web',
         env: process.env.NODE_ENV || 'development',
