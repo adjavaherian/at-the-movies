@@ -6,6 +6,7 @@ import { match, RouterContext} from 'react-router';
 import AppRoutes from 'app/routes';
 
 var url = require('url');
+var api = require('app/utils/api');
 var _ = require('lodash');
 var Promise = require('promise');
 function header(){
@@ -22,6 +23,7 @@ function header(){
             <meta content="yes" name="apple-mobile-web-app-capable"/>
             <meta content="yes" name="mobile-web-app-capable"/>
             <script src="/commons.bundle.js"></script>
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.0/foundation.min.css" />
             <style></style>
             </head>
   `;
@@ -31,6 +33,7 @@ function header(){
 var reactMiddleWare = function(req, res, next) {
 
     //res.end('React Middlewarez ');
+    //console.debug(res.locals.flux);
 
     match({ routes: AppRoutes, location: req.originalUrl }, (error, redirectLocation, renderProps) => {
         if (error) {
@@ -47,7 +50,17 @@ var reactMiddleWare = function(req, res, next) {
 
 
         // collect promises
-        var promises = [];
+        var promises = [
+            api.getMovies()
+                .catch(function(err){
+                    throw err;
+                })
+                .then(function(result){
+                    console.debug('api result', result[0]);
+                    res.locals.flux.actions.addMovies(result);
+                })
+
+        ];
 
         renderProps.components.forEach(function(route) {
             console.log('route serverMount', typeof route.serverMount);
@@ -68,10 +81,11 @@ var reactMiddleWare = function(req, res, next) {
             })
             .done(function onFulfilled(result) {
 
-                console.debug('got result', typeof result);
+                var serializedFlux = res.locals.flux.serialize();
+                //console.debug('bobobobobobo', serializedFlux);
 
                 function createFluxComponent(Component, props) {
-                    props = _.extend(props, stateStub, {result: result});
+                    props = _.extend(props, stateStub, {serializedFlux: serializedFlux, flux: res.locals.flux}, result);
                     return <Component {...props} />;
                 }
 

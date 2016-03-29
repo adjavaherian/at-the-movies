@@ -1,4 +1,8 @@
 var React = require('react');
+var api = require('app/utils/api');
+var Fluxxor = require('fluxxor');
+var FluxMixin = Fluxxor.FluxMixin(React);
+var StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
 var AppTemplate = React.createClass({
     displayName: 'AppTemplate',
@@ -7,13 +11,10 @@ var AppTemplate = React.createClass({
         location: React.PropTypes.object,
         params: React.PropTypes.object,
         serializedFlux: React.PropTypes.string,
+        flux: React.PropTypes.object,
         result: React.PropTypes.array
     },
-    mixins: [
-    ],
-    statics: {
-
-    },
+    mixins: [FluxMixin, StoreWatchMixin('MovieStore')],
     getInitialState: function() {
         return {
             device: {
@@ -22,9 +23,14 @@ var AppTemplate = React.createClass({
             }
         };
     },
+    getStateFromFlux: function() {
+        var flux = this.getFlux();
+        return {
+
+        }
+    },
     componentDidMount: function() {
         var self = this;
-        console.log('this result', this.props.result);
     },
     render: function() {
 
@@ -39,6 +45,12 @@ var AppTemplate = React.createClass({
                     location: this.props.location,
                     result: this.props.result
                 })}
+
+                <script
+                    dangerouslySetInnerHTML={{__html: this.props.serializedFlux}}
+                    id="serializedFlux"
+                    type="application/json"
+                    />
 
             </div>
         );

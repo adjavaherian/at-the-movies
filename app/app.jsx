@@ -6,11 +6,17 @@ import ReactDOM from 'react-dom';
 import { Router, browserHistory } from 'react-router';
 import AppRoutes from 'app/routes';
 import 'app/utils/assign';
+import FluxConstructor from 'app/flux'
 
+// create flux
+window.flux = FluxConstructor();
+window.flux.hydrate(document.getElementById('serializedFlux').innerHTML);
 
 function createFluxComponent(Component, props) {
+
     props = Object.assign(props, {
-        path: window.location.pathname
+        path: window.location.pathname,
+        flux: window.flux
     });
 
     return <Component {...props} />;
