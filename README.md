@@ -13,3 +13,8 @@ From a functional and UX perspective, how the movies or their details interact a
 `npm start`
 
 ...wait for build and then try http://localhost:3000
+nodemon will crash on first start, but will automatically restart after the app is built
+
+note:  I had to spend a little extra time and make this fully isomorphic, so I could utilize server side requests for the api. 
+It looks like the example api doesn't support CORS, so my client side requests were moot.  This kind of does the same thing, but on the server side
+and then adds the movies to flux, so they are available for all subsequent client side code.
