@@ -9,8 +9,8 @@ button’s implementation is not required, the button can redirect the user to t
 From a functional and UX perspective, how the movies or their details interact and are displayed is entirely up to you. As long as the above requirements are met, feel free to focus on areas you’re most interested in.
 
 `git clone https://github.com/adjavaherian/at-the-movies.git`
-`npm install`
-`npm start`
+`&& npm install`
+`&& npm start`
 
 ...wait for build and then try http://localhost:3000
 nodemon will crash on first start, but will automatically restart after the app is built
