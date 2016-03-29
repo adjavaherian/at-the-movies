@@ -24,7 +24,7 @@ function header(){
             <meta content="yes" name="mobile-web-app-capable"/>
             <script src="/commons.bundle.js"></script>
             <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.0/foundation.min.css" />
-            <style></style>
+            <link rel="stylesheet" type="text/css" href="/style.app.css" />
             </head>
   `;
 

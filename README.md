@@ -7,3 +7,9 @@ a film to screen
  - Booking - users are able to proceed to purchase tickets to the desired movie via a button (the
 button’s implementation is not required, the button can redirect the user to the Zocdoc homepage or another 3rd-party website)
 From a functional and UX perspective, how the movies or their details interact and are displayed is entirely up to you. As long as the above requirements are met, feel free to focus on areas you’re most interested in.
+
+`git clone https://github.com/adjavaherian/at-the-movies.git`
+`npm install`
+`npm start`
+
+...wait for build and then try http://localhost:3000

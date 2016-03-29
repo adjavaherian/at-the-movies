@@ -55,7 +55,7 @@ var client = {
         loaders: [
             {
                 test: /\.scss$/,
-                loader: ExtractTextPlugin.extract('style-loader', 'css!postcss!sass')
+                loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass')
             }
         ]
     },
@@ -66,7 +66,7 @@ var client = {
             //minChunks: 2,
             chunks: ['rehydrate', 'app']
         }),
-        new ExtractTextPlugin('style.[name].[chunkhash].css', {
+        new ExtractTextPlugin('style.[name].css', {
             disable: false,
             allChunks: true // extract all css from async chunks as well
         }),
@@ -103,6 +103,14 @@ var server = {
                 loader: 'noop-loader'
             }
         ]
+    },
+    resolveLoader: {
+        root: __dirname,
+        fallback: __dirname + '/node_modules',
+        alias: {
+            'noop-loader': path.join(__dirname,  'webpack-utils', 'noop-loader'),
+            'passthru-loader': path.join(__dirname, 'webpack-utils', 'passthru-loader')
+        }
     },
     plugins: [
         new webpack.DefinePlugin({

@@ -5,7 +5,10 @@ var FluxMixin = Fluxxor.FluxMixin(React);
 var StoreWatchMixin = Fluxxor.StoreWatchMixin;
 var MovieCard = require('app/components/MovieCard');
 var _ = require('lodash');
-//var StyleSheet = require('scss/pages/FrontPage');
+var StyleSheet = require('scss/FrontPage');
+
+var viz = new Array(10);
+    viz.map(function(){return 'hidden'});
 
 var FrontPage = React.createClass({
     displayName: 'FrontPage',
@@ -15,16 +18,13 @@ var FrontPage = React.createClass({
     mixins: [
         FluxMixin, StoreWatchMixin('MovieStore')
     ],
-    getInitialState: function() {
-        return {
-            movies : []
-        };
-    },
+
     getStateFromFlux: function() {
         var flux = this.getFlux();
         var topTen = flux.stores.MovieStore.state.movies.splice(0,10);
         return {
-            topTen : topTen
+            topTen : topTen,
+            visible: ['hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden', 'hidden']
         }
     },
     statics: {
@@ -49,18 +49,23 @@ var FrontPage = React.createClass({
     componentDidMount: function(){
         //console.debug('component did mount', this.props.result);
     },
-    expandMovie: function(){
-
+    expandMovie: function(id){
+        console.debug('expand id', this.state.visible[id]);
+        var temp = this.state.visible;
+        temp[id] = temp[id] === 'hidden' ? '': 'hidden';
+        this.setState({
+            visible : temp
+        });
     },
     topTen: function(){
         var self = this;
         var movies = [];
         this.state.topTen.map(function(movie, i){
             movies.push((
-                <li key={i} onClick={self.expandMovie(movie.Id)} >
+                <li className="title" key={i} onClick={self.expandMovie.bind(self, i)} >
                     <span className="rank">{movie.Rank}). </span>
                     <span className="name">{movie.Name}</span>
-                    <MovieCard {...movie} />
+                    <MovieCard {...movie} hide={self.state.visible[i]}/>
                 </li>
             ))
         });
@@ -69,13 +74,11 @@ var FrontPage = React.createClass({
 
     },
     render: function() {
-        console.log(this.state.topTen);
 
         return (
             <div className="FrontPage row">
-
                 <div className="small-12 small-centered columns ">
-                    <h2>Top Ten movies by Rank</h2>
+                    <h1>Top Ten movies by Rank</h1>
                 </div>
 
                 <ul className="small-12 columns">
